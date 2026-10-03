@@ -34,7 +34,7 @@ export const AppShell: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 flex">
+    <div className="min-h-screen bg-[#070709] text-zinc-100 flex selection:bg-zinc-100 selection:text-zinc-950">
       {/* Sidebar Navigation */}
       <Sidebar
         isMobileOpen={isMobileMenuOpen}
@@ -42,7 +42,7 @@ export const AppShell: React.FC = () => {
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 lg:pl-64 bg-[#030712]">
+      <div className="flex-1 flex flex-col min-w-0 lg:pl-64 bg-[#070709] tech-grid-bg">
         <Header
           isWsConnected={isConnected}
           onToggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
