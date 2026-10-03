@@ -1,0 +1,36 @@
+{
+  "data": [
+    {
+      "notification_id": "notif_1",
+      "report_id": "r_101",
+      "type": "report_received",
+      "message": "New critical pothole report #r_101 received in Ring Road Junction",
+      "channel": "in_app",
+      "is_read": false,
+      "sent_at": "2026-10-03T08:30:05Z"
+    },
+    {
+      "notification_id": "notif_2",
+      "report_id": "r_103",
+      "type": "escalated",
+      "message": "Report #r_103 has been ESCALATED due to electric wire safety hazard breach",
+      "channel": "in_app",
+      "is_read": false,
+      "sent_at": "2026-10-03T06:00:10Z"
+    },
+    {
+      "notification_id": "notif_3",
+      "report_id": "r_106",
+      "type": "resolved",
+      "message": "Report #r_106 (Vandalism) was marked as resolved by Enforcement",
+      "channel": "in_app",
+      "is_read": true,
+      "sent_at": "2026-10-02T15:30:00Z"
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "page_size": 20,
+    "total": 3
+  }
+}

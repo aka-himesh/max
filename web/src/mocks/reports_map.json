@@ -1,0 +1,60 @@
+{
+  "data": [
+    {
+      "report_id": "r_101",
+      "latitude": 21.1458,
+      "longitude": 79.0882,
+      "category": "pothole",
+      "severity": 4,
+      "status": "in_progress"
+    },
+    {
+      "report_id": "r_102",
+      "latitude": 21.1524,
+      "longitude": 79.0912,
+      "category": "garbage",
+      "severity": 3,
+      "status": "verified"
+    },
+    {
+      "report_id": "r_103",
+      "latitude": 21.1399,
+      "longitude": 79.0755,
+      "category": "electric_hazard",
+      "severity": 5,
+      "status": "escalated"
+    },
+    {
+      "report_id": "r_104",
+      "latitude": 21.1610,
+      "longitude": 79.0820,
+      "category": "broken_road_sign",
+      "severity": 2,
+      "status": "assigned"
+    },
+    {
+      "report_id": "r_105",
+      "latitude": 21.1412,
+      "longitude": 79.0995,
+      "category": "fallen_tree",
+      "severity": 4,
+      "status": "submitted"
+    },
+    {
+      "report_id": "r_106",
+      "latitude": 21.1480,
+      "longitude": 79.0850,
+      "category": "vandalism",
+      "severity": 1,
+      "status": "resolved"
+    },
+    {
+      "report_id": "r_107",
+      "latitude": 21.1550,
+      "longitude": 79.0815,
+      "category": "illegal_parking",
+      "severity": 2,
+      "status": "submitted"
+    }
+  ]
+}

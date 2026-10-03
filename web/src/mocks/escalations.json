@@ -1,0 +1,11 @@
+{
+  "data": [
+    {
+      "escalation_id": "esc_1",
+      "previous_authority": "Roads Ward Officer (Ward 12)",
+      "escalated_to": "Superintending Engineer (Infrastructure)",
+      "reason": "SLA warning threshold reached (>75% elapsed without active crew deployment)",
+      "timestamp": "2026-10-03T09:10:00Z"
+    }
+  ]
+}

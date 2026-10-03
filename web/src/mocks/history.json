@@ -1,0 +1,31 @@
+{
+  "data": [
+    {
+      "log_id": "hl_1",
+      "old_status": "submitted",
+      "new_status": "verified",
+      "changed_by_name": "Ramesh Kumar (Officer)",
+      "changed_by_role": "officer",
+      "comment": "Verified AI detection against citizen photo. Confirmed high severity road hazard.",
+      "timestamp": "2026-10-03T08:45:00Z"
+    },
+    {
+      "log_id": "hl_2",
+      "old_status": "verified",
+      "new_status": "assigned",
+      "changed_by_name": "Ramesh Kumar (Officer)",
+      "changed_by_role": "officer",
+      "comment": "Assigned to Ward 12 Quick Response Road Repair Unit.",
+      "timestamp": "2026-10-03T09:00:00Z"
+    },
+    {
+      "log_id": "hl_3",
+      "old_status": "assigned",
+      "new_status": "in_progress",
+      "changed_by_name": "Ramesh Kumar (Officer)",
+      "changed_by_role": "officer",
+      "comment": "Road repair crew dispatched with asphalt patcher vehicle.",
+      "timestamp": "2026-10-03T09:15:00Z"
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "data": {
+    "totals": {
+      "total": 120,
+      "open": 80,
+      "resolved": 30,
+      "escalated": 6,
+      "sla_breached": 9
+    },
+    "by_status": {
+      "submitted": 20,
+      "verified": 10,
+      "assigned": 15,
+      "in_progress": 35,
+      "resolved": 30,
+      "rejected": 4,
+      "escalated": 6
+    },
+    "by_category": {
+      "damaged_road": 18,
+      "pothole": 40,
+      "illegal_parking": 12,
+      "broken_road_sign": 8,
+      "fallen_tree": 6,
+      "garbage": 22,
+      "vandalism": 4,
+      "dead_animal": 3,
+      "damaged_concrete": 5,
+      "electric_hazard": 2,
+      "other": 0
+    },
+    "by_severity": {
+      "1": 5,
+      "2": 20,
+      "3": 40,
+      "4": 35,
+      "5": 20
+    },
+    "by_source": {
+      "citizen": 90,
+      "vehicle_ai": 30
+    },
+    "by_department": [
+      {
+        "department_id": "d_roads",
+        "department_name": "Roads & Infrastructure",
+        "count": 66
+      },
+      {
+        "department_id": "d_sanitation",
+        "department_name": "Public Sanitation & Waste",
+        "count": 25
+      },
+      {
+        "department_id": "d_traffic",
+        "department_name": "Traffic Management",
+        "count": 12
+      },
+      {
+        "department_id": "d_horticulture",
+        "department_name": "Horticulture & Parks",
+        "count": 6
+      },
+      {
+        "department_id": "d_enforcement",
+        "department_name": "Civic Enforcement",
+        "count": 4
+      },
+      {
+        "department_id": "d_electricity",
+        "department_name": "Electricity & Power",
+        "count": 2
+      }
+    ],
+    "avg_resolution_hours": 41.5,
+    "recent_reports": [
+      {
+        "report_id": "r_101",
+        "source": "citizen",
+        "category": "pothole",
+        "description": "Deep pothole near central bus terminal causing severe traffic slowdowns",
+        "image_url": "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=1280&q=80",
+        "latitude": 21.1458,
+        "longitude": 79.0882,
+        "address": "Ward 12, Ring Road Junction, City Center",
+        "severity": 4,
+        "priority_score": 82.0,
+        "status": "in_progress",
+        "department_id": "d_roads",
+        "department_name": "Roads & Infrastructure",
+        "ai_confidence": 0.89,
+        "is_duplicate": false,
+        "duplicate_of": null,
+        "report_count": 3,
+        "created_at": "2026-10-03T08:30:00Z",
+        "updated_at": "2026-10-03T09:15:00Z"
+      },
+      {
+        "report_id": "r_102",
+        "source": "vehicle_ai",
+        "category": "garbage",
+        "description": "Uncollected municipal waste pile overflowing onto pedestrian walkway",
+        "image_url": "https://images.unsplash.com/photo-1605600659908-0ef719419d41?auto=format&fit=crop&w=1280&q=80",
+        "latitude": 21.1524,
+        "longitude": 79.0912,
+        "address": "Sector 4, Market Street",
+        "severity": 3,
+        "priority_score": 65.0,
+        "status": "verified",
+        "department_id": "d_sanitation",
+        "department_name": "Public Sanitation & Waste",
+        "ai_confidence": 0.94,
+        "is_duplicate": false,
+        "duplicate_of": null,
+        "report_count": 1,
+        "created_at": "2026-10-03T07:45:00Z",
+        "updated_at": "2026-10-03T08:00:00Z"
+      },
+      {
+        "report_id": "r_103",
+        "source": "citizen",
+        "category": "electric_hazard",
+        "description": "Snapped power line hanging dangerously close to school entrance",
+        "image_url": "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=1280&q=80",
+        "latitude": 21.1399,
+        "longitude": 79.0755,
+        "address": "Near St. Mary's School, South Ave",
+        "severity": 5,
+        "priority_score": 98.0,
+        "status": "escalated",
+        "department_id": "d_electricity",
+        "department_name": "Electricity & Power",
+        "ai_confidence": 0.91,
+        "is_duplicate": false,
+        "duplicate_of": null,
+        "report_count": 4,
+        "created_at": "2026-10-02T18:20:00Z",
+        "updated_at": "2026-10-03T06:00:00Z"
+      }
+    ]
+  }
+}

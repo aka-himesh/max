@@ -1,0 +1,40 @@
+{
+  "data": [
+    {
+      "department_id": "d_roads",
+      "department_name": "Roads & Infrastructure",
+      "department_type": "Roads",
+      "contact_email": "roads@city.gov"
+    },
+    {
+      "department_id": "d_traffic",
+      "department_name": "Traffic Management",
+      "department_type": "Traffic",
+      "contact_email": "traffic@city.gov"
+    },
+    {
+      "department_id": "d_sanitation",
+      "department_name": "Public Sanitation & Waste",
+      "department_type": "Sanitation",
+      "contact_email": "sanitation@city.gov"
+    },
+    {
+      "department_id": "d_horticulture",
+      "department_name": "Horticulture & Parks",
+      "department_type": "Horticulture",
+      "contact_email": "parks@city.gov"
+    },
+    {
+      "department_id": "d_electricity",
+      "department_name": "Electricity & Power",
+      "department_type": "Electricity",
+      "contact_email": "power@city.gov"
+    },
+    {
+      "department_id": "d_enforcement",
+      "department_name": "Civic Enforcement",
+      "department_type": "Enforcement",
+      "contact_email": "enforcement@city.gov"
+    }
+  ]
+}
