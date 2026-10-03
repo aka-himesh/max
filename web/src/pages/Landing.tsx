@@ -1,53 +1,61 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Sparkles,
-  ArrowUpRight,
   Camera,
   Layers,
-  ChevronDown,
-  FileText,
+  ArrowUpRight,
+  PlusCircle,
 } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
 
 export const Landing: React.FC = () => {
   const { isAuthenticated, user } = useAuth();
-  const [isAnimationActive, setIsAnimationActive] = useState<boolean>(true);
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 flex flex-col selection:bg-indigo-500 selection:text-white relative overflow-hidden font-sans">
-      {/* Ambient background glow spotlights */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-gradient-to-b from-indigo-600/15 via-purple-600/10 to-transparent rounded-full blur-3xl pointer-events-none -z-10 animate-pulse-slow" />
-      <div className="absolute top-1/3 left-1/4 w-[500px] h-[400px] bg-cyan-500/10 rounded-full blur-3xl pointer-events-none -z-10" />
+    <div className="min-h-screen bg-[#070709] text-zinc-100 flex flex-col font-sans selection:bg-zinc-100 selection:text-zinc-950 relative overflow-x-hidden tech-grid-bg">
+      {/* Top Header Bar */}
+      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-6 pb-4">
+        <div className="flex items-center justify-between text-xs tracking-widest text-zinc-400 font-mono-tech">
+          <div className="flex items-center gap-3 flex-1">
+            <span className="text-zinc-200 font-medium">CIVIC INFRASTRUCTURE INTELLIGENCE</span>
+            <div className="h-[1px] bg-zinc-800 flex-1 hidden sm:block"></div>
+          </div>
+          <div className="flex items-center gap-4 pl-4 text-zinc-500">
+            <span className="hidden md:inline text-[11px] text-zinc-400">LATENCY: 12ms // YOLOv8: ACTIVE</span>
+            <span>@CIVICFIX-AI // V1.0</span>
+          </div>
+        </div>
+      </div>
 
-      {/* Floating Pill Navigation Header */}
-      <header className="sticky top-5 z-50 px-4 max-w-5xl mx-auto w-full">
-        <nav className="glass-capsule rounded-full px-5 sm:px-7 py-3 flex items-center justify-between shadow-2xl shadow-black/80 border border-white/[0.12]">
-          {/* Brand Serif Logo */}
+      {/* Floating Modern Capsule Navigation */}
+      <header className="sticky top-4 z-50 px-4 max-w-6xl mx-auto w-full my-2">
+        <nav className="tech-panel-glass px-5 sm:px-8 py-3.5 flex items-center justify-between border border-zinc-800/80 shadow-2xl">
+          {/* Brand Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:text-indigo-300 transition italic">
-              CivicFix
+            <div className="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+            <span className="font-tech text-sm sm:text-base font-bold tracking-wider text-white group-hover:text-zinc-300 transition">
+              CIVICFIX<span className="text-zinc-500">.SYS</span>
             </span>
           </Link>
 
           {/* Centered Navigation Menu */}
-          <div className="hidden md:flex items-center gap-6 text-xs font-semibold tracking-wider text-slate-300 uppercase">
-            <Link to="/" className="text-white border-b-2 border-white pb-0.5 transition">
-              Home
+          <div className="hidden md:flex items-center gap-8 text-[11px] font-mono-tech tracking-widest text-zinc-400 uppercase">
+            <Link to="/" className="text-white border-b border-white pb-0.5 transition">
+              OVERVIEW
             </Link>
             <Link to="/report-issue" className="hover:text-white transition">
-              Citizen Report
+              REPORT DEFECT
             </Link>
-            <Link to="/drive-mode" className="hover:text-white transition flex items-center gap-1 text-cyan-400">
-              <Camera className="w-3.5 h-3.5" />
-              <span>Live Drive Mode</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
+            <Link to="/drive-mode" className="hover:text-white transition flex items-center gap-1.5 text-zinc-200">
+              <Camera className="w-3.5 h-3.5 text-zinc-300" />
+              <span>LIVE DRIVE</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
             </Link>
             <Link to="/dashboard" className="hover:text-white transition">
-              Dashboard
+              DASHBOARD
             </Link>
             <Link to="/map" className="hover:text-white transition">
-              Live Map
+              HEATMAP
             </Link>
           </div>
 
@@ -56,17 +64,17 @@ export const Landing: React.FC = () => {
             {isAuthenticated ? (
               <Link
                 to="/dashboard"
-                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-white text-slate-950 hover:bg-slate-200 text-xs font-semibold transition shadow-md"
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-white text-zinc-950 hover:bg-zinc-200 text-xs font-mono-tech uppercase font-bold transition"
               >
-                <span>Dashboard ({user?.role})</span>
+                <span>PORTAL ({user?.role})</span>
                 <ArrowUpRight className="w-3.5 h-3.5" />
               </Link>
             ) : (
               <Link
                 to="/login"
-                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.16] border border-white/20 text-white text-xs font-semibold transition"
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 border border-zinc-700 bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 text-xs font-mono-tech uppercase tracking-wider transition"
               >
-                <span>Authority Login</span>
+                <span>AUTHORITY LOGIN</span>
                 <ArrowUpRight className="w-3.5 h-3.5" />
               </Link>
             )}
@@ -74,213 +82,333 @@ export const Landing: React.FC = () => {
         </nav>
       </header>
 
-      {/* Main Hero Section */}
-      <main className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 pt-16 sm:pt-24 pb-16 flex flex-col items-center text-center">
-        {/* Sparkle Icon Accent */}
-        <div className="inline-flex items-center justify-center text-slate-300 mb-6 animate-bounce-short">
-          <Sparkles className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
-        </div>
-
-        {/* Massive Typographic Headline */}
-        <h1 className="text-5xl sm:text-7xl md:text-8xl font-extrabold tracking-tight text-white max-w-4xl leading-[1.08] mb-6 select-none">
-          <span className="block gradient-text">I Detect</span>
-          <span className="block italic font-serif font-normal text-slate-300">
-            hazards <span className="not-italic text-3xl sm:text-5xl align-top text-indigo-400 font-sans">✦</span>
-          </span>
-        </h1>
-
-        {/* Subtitle Description */}
-        <p className="text-base sm:text-lg md:text-xl text-slate-400 max-w-2xl leading-relaxed font-normal mb-8">
-          Autonomous municipal defect detection, instant road contractor accountability, and realtime civic issue tracking engineered for modern urban governance.
-        </p>
-
-        {/* Editorial Quote Kicker */}
-        <div className="text-xs sm:text-sm text-slate-500 italic max-w-md font-serif mb-10">
-          "Good design is obvious. Safe infrastructure is non-negotiable." —{' '}
-          <span className="text-slate-300 not-italic font-sans font-semibold">CivicFix</span>
-        </div>
-
-        {/* Animation / Simulation Status Capsule */}
-        <button
-          type="button"
-          onClick={() => setIsAnimationActive(!isAnimationActive)}
-          className="glass-panel px-4 py-1.5 rounded-full text-xs font-medium text-slate-300 hover:text-white hover:bg-white/[0.08] transition flex items-center gap-2 mb-16 border border-white/10"
-        >
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>{isAnimationActive ? 'Live System Active' : 'System Paused'}</span>
-        </button>
-
-        {/* Scroll Explorer Button */}
-        <a
-          href="#modules"
-          className="glass-capsule px-5 py-2 rounded-full text-xs font-semibold text-slate-300 hover:text-white flex items-center gap-2 hover:border-white/30 transition shadow-lg mb-20"
-        >
-          <span>Explore Platform Systems</span>
-          <ChevronDown className="w-3.5 h-3.5 animate-bounce" />
-        </a>
-
-        {/* Three Core Platform Feature Cards */}
-        <section id="modules" className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 text-left pt-6">
-          {/* 1. Citizen Reporting Module */}
-          <div className="glass-panel p-6 sm:p-7 rounded-3xl border border-white/10 hover:border-indigo-500/40 transition-all duration-300 group relative flex flex-col justify-between">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                <FileText className="w-6 h-6" />
-              </div>
-              <h2 className="text-lg font-bold text-white mb-2">
-                Citizen Issue Lodging
-              </h2>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Upload photo evidence with interactive manual GPS map pinpointing. Automatic YOLOv8 AI triage classifies defects, estimates severity, and routes to appropriate municipal departments.
-              </p>
+      {/* Main Content Area Container */}
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 pt-4 pb-20 flex flex-col gap-8">
+        
+        {/* ======================================================== */}
+        {/* CARD 1: HERO - DRILLING/ROAD PROCESS OPTIMIZATION CARD  */}
+        {/* ======================================================== */}
+        <section className="tech-panel w-full border border-zinc-800 relative p-6 sm:p-10 flex flex-col items-center justify-between min-h-[360px] sm:min-h-[420px] overflow-hidden">
+          {/* Top Process Breadcrumb Bar */}
+          <div className="w-full grid grid-cols-4 border-b border-zinc-800/80 pb-4 text-center text-[10px] sm:text-xs font-mono-tech tracking-widest text-zinc-400 uppercase">
+            <div className="border-r border-zinc-800/80 px-2 flex items-center justify-center gap-1.5 text-zinc-200">
+              <span className="w-1.5 h-1.5 bg-zinc-300 rounded-full inline-block"></span>
+              <span>MEASURE</span>
             </div>
-            <div className="pt-6">
-              <Link
-                to="/report-issue"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-400 hover:text-indigo-300 group-hover:translate-x-1 transition-transform"
-              >
-                <span>Report Issue Now</span>
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </Link>
+            <div className="border-r border-zinc-800/80 px-2 flex items-center justify-center gap-1.5">
+              <span>ANALYZE</span>
+            </div>
+            <div className="border-r border-zinc-800/80 px-2 flex items-center justify-center gap-1.5">
+              <span>IMPLEMENT</span>
+            </div>
+            <div className="px-2 flex items-center justify-center gap-1.5">
+              <span>MORE</span>
             </div>
           </div>
 
-          {/* 2. Live Drive Mode & Pothole Vision */}
-          <div className="glass-panel p-6 sm:p-7 rounded-3xl border border-white/10 hover:border-cyan-500/40 transition-all duration-300 group relative flex flex-col justify-between">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                <Camera className="w-6 h-6" />
+
+          {/* Corner Crosshair Glyphs */}
+          <div className="w-full flex items-center justify-between text-zinc-600 font-mono-tech text-xs select-none">
+            <span>※ ※</span>
+            <span>※ ※</span>
+          </div>
+
+          {/* Primary Extended Title */}
+          <div className="w-full pt-4 text-center">
+            <h1 className="font-tech text-2xl sm:text-4xl md:text-5xl tracking-[0.18em] uppercase chrome-gradient-text font-black leading-tight">
+              ROAD DEFECT PROCESS OPTIMIZATION
+            </h1>
+            <p className="font-mono-tech text-[11px] sm:text-xs text-zinc-400 tracking-widest mt-2 uppercase">
+              Autonomous Dashcam Telemetry &bull; YOLOv8 Hazard Detection &bull; SLA Contractor Dispatch
+            </p>
+          </div>
+
+          {/* Quick Action Buttons */}
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mt-8 pt-6 border-t border-zinc-800/80 w-full">
+            <Link
+              to="/drive-mode"
+              className="px-6 py-2.5 bg-white text-zinc-950 font-mono-tech text-xs tracking-wider uppercase font-bold hover:bg-zinc-200 transition flex items-center gap-2"
+            >
+              <Camera className="w-4 h-4" />
+              <span>Launch Live Drive Mode</span>
+            </Link>
+
+            <Link
+              to="/report-issue"
+              className="px-6 py-2.5 border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-zinc-100 font-mono-tech text-xs tracking-wider uppercase transition flex items-center gap-2"
+            >
+              <PlusCircle className="w-4 h-4" />
+              <span>Report Road Incident</span>
+            </Link>
+
+            <Link
+              to="/dashboard"
+              className="px-6 py-2.5 border border-zinc-800 hover:border-zinc-700 text-zinc-400 hover:text-white font-mono-tech text-xs tracking-wider uppercase transition flex items-center gap-2"
+            >
+              <Layers className="w-4 h-4" />
+              <span>Command Center</span>
+            </Link>
+          </div>
+        </section>
+
+        {/* ======================================================== */}
+        {/* ROW 2: SPLIT CARD (DATA ASSESSMENT & PERCENTAGE METRICS) */}
+        {/* ======================================================== */}
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+          {/* Left Card: Data Assessment */}
+          <div className="tech-panel border border-zinc-800 p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden min-h-[380px]">
+            {/* Header Tabs */}
+            <div className="grid grid-cols-3 border-b border-zinc-800 pb-3 text-[10px] font-mono-tech tracking-widest text-zinc-500 uppercase">
+              <span>MEASURE</span>
+              <span className="text-zinc-200">ANALYZE</span>
+              <span>IMPLEMENT</span>
+            </div>
+
+            {/* Title & Description */}
+            <div className="my-6">
+              <h2 className="font-tech text-xl sm:text-2xl tracking-[0.12em] uppercase text-zinc-100 font-bold leading-snug">
+                DATA THAT ASSESS THE IMPACT ON INFRASTRUCTURE
+              </h2>
+              <div className="mt-4 text-xs font-mono-tech text-zinc-400 leading-relaxed border-l-2 border-zinc-700 pl-3">
+                Result of deploying digital vision twins for live asphalt cavity detection, 
+                high-frequency GPS drift correction, and automated contractor routing parameters.
               </div>
-              <div className="flex items-center gap-2 mb-2">
-                <h2 className="text-lg font-bold text-white">
-                  Live Drive Mode Vision
-                </h2>
-                <span className="text-[10px] bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded-full font-mono">
-                  Live WebRTC
+            </div>
+
+            {/* Bottom Wireframe Wave & Glyphs */}
+            <div className="relative pt-6 border-t border-zinc-800 flex items-end justify-between">
+              <div className="text-[10px] font-mono-tech text-zinc-500 uppercase">
+                LATITUDE // LONGITUDE TELEMETRY STREAM
+              </div>
+              <span className="text-zinc-600 font-mono-tech text-xs">※ ※</span>
+            </div>
+          </div>
+
+          {/* Right Card: 22% & 35% Metric Column with Wireframe Mesh */}
+          <div className="tech-panel border border-zinc-800 relative overflow-hidden grid grid-cols-1 sm:grid-cols-2 min-h-[380px]">
+            {/* Background Wireframe Mesh Texture */}
+            <div className="absolute inset-0 opacity-20 pointer-events-none">
+              <img
+                src="/wireframe_mesh.jpg"
+                alt="Wireframe Contour Mesh"
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            {/* Column 1: 22% Stat */}
+            <div className="p-6 sm:p-8 border-b sm:border-b-0 sm:border-r border-zinc-800 flex flex-col justify-between relative z-10">
+              <div>
+                <div className="text-[10px] font-mono-tech text-zinc-500 tracking-widest uppercase mb-4">
+                  01 // RESPONSE
+                </div>
+                <div className="font-tech text-4xl sm:text-5xl text-white font-bold tracking-tight">
+                  22%
+                </div>
+                <div className="text-xs font-mono-tech text-zinc-400 mt-3 leading-snug">
+                  reduction in average civic issue verification & triage cycle time
+                </div>
+              </div>
+
+              <div className="pt-8 flex justify-end text-zinc-600 font-mono-tech text-xs">
+                <span>※ ※</span>
+              </div>
+            </div>
+
+            {/* Column 2: 35% Stat */}
+            <div className="p-6 sm:p-8 flex flex-col justify-between relative z-10 bg-zinc-950/40">
+              <div className="flex justify-between items-start">
+                <div className="text-[10px] font-mono-tech text-zinc-500 tracking-widest uppercase mb-4">
+                  02 // LONGEVITY
+                </div>
+                <div className="text-[10px] font-mono-tech text-zinc-400 uppercase">MORE</div>
+              </div>
+
+              <div>
+                <div className="font-tech text-4xl sm:text-5xl text-white font-bold tracking-tight">
+                  35%
+                </div>
+                <div className="text-xs font-mono-tech text-zinc-400 mt-3 leading-snug">
+                  increase in average contractor repair efficiency in challenging roadway formations
+                </div>
+              </div>
+
+              <div className="pt-8 flex justify-between items-center text-zinc-600 font-mono-tech text-xs">
+                <span className="text-[10px] text-zinc-500 uppercase">SLA COMPLIANCE</span>
+                <span>※ ※</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ======================================================== */}
+        {/* ROW 3: ALLOCATION & BUDGET PROJECT DEVELOPMENT CARD     */}
+        {/* ======================================================== */}
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+          {/* Left Card: $40 M Project Development */}
+          <div className="tech-panel border border-zinc-800 p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden min-h-[360px]">
+            {/* Header Tabs */}
+            <div className="grid grid-cols-3 border-b border-zinc-800 pb-3 text-[10px] font-mono-tech tracking-widest text-zinc-500 uppercase">
+              <span>MEASURE</span>
+              <span>ANALYZE</span>
+              <span className="text-zinc-200">IMPLEMENT</span>
+            </div>
+
+            {/* Title & Graphic */}
+            <div className="my-auto py-6">
+              <div className="font-tech text-3xl sm:text-4xl text-white font-bold tracking-[0.14em] uppercase leading-tight">
+                $40 M
+              </div>
+              <div className="font-tech text-lg sm:text-xl text-zinc-300 font-bold tracking-wider uppercase mt-1">
+                FOR ROAD RESILIENCE & ASSET MANAGEMENT
+              </div>
+            </div>
+
+            {/* Wireframe curve accent */}
+            <div className="border-t border-zinc-800 pt-4 flex items-center justify-between text-xs font-mono-tech text-zinc-500">
+              <span>ALLOCATION // FY2026-2027</span>
+              <span>※ ※</span>
+            </div>
+          </div>
+
+          {/* Right Card: Percentage Distribution Table */}
+          <div className="tech-panel border border-zinc-800 p-6 sm:p-8 flex flex-col justify-between min-h-[360px]">
+            <div className="text-[10px] font-mono-tech text-zinc-500 tracking-widest uppercase mb-4 pb-2 border-b border-zinc-800">
+              INFRASTRUCTURE RESOURCE MATRIX
+            </div>
+
+            <div className="space-y-4 my-auto">
+              {/* Row 1 */}
+              <div className="flex items-center justify-between border-b border-zinc-800 pb-3 text-xs font-mono-tech">
+                <div className="w-14 text-zinc-200 font-bold bg-zinc-900 px-2 py-1 text-center border border-zinc-800">
+                  15%
+                </div>
+                <div className="flex-1 px-4 text-zinc-300">
+                  Continuous Telemetry & Data Notice Ingestion
+                </div>
+                <span className="text-zinc-600">※ ※</span>
+              </div>
+
+              {/* Row 2 */}
+              <div className="flex items-center justify-between border-b border-zinc-800 pb-3 text-xs font-mono-tech">
+                <div className="w-14 text-zinc-200 font-bold bg-zinc-900 px-2 py-1 text-center border border-zinc-800">
+                  35%
+                </div>
+                <div className="flex-1 px-4 text-zinc-300">
+                  Pothole Verification & SLA Management Portal
+                </div>
+                <span className="text-zinc-600">※ ※</span>
+              </div>
+
+              {/* Row 3 */}
+              <div className="flex items-center justify-between border-b border-zinc-800 pb-3 text-xs font-mono-tech">
+                <div className="w-14 text-zinc-200 font-bold bg-zinc-900 px-2 py-1 text-center border border-zinc-800">
+                  35%
+                </div>
+                <div className="flex-1 px-4 text-zinc-300">
+                  Field Contractor Dispatch & Push Notifications
+                </div>
+                <span className="text-zinc-600">※ ※</span>
+              </div>
+
+              {/* Row 4 */}
+              <div className="flex items-center justify-between text-xs font-mono-tech">
+                <div className="w-14 text-zinc-200 font-bold bg-zinc-900 px-2 py-1 text-center border border-zinc-800">
+                  35%
+                </div>
+                <div className="flex-1 px-4 text-zinc-300">
+                  YOLOv8 Edge Vision Cores & Digital Twin Mapping
+                </div>
+                <span className="text-zinc-600">※ ※</span>
+              </div>
+            </div>
+
+            <div className="border-t border-zinc-800 pt-3 text-[10px] font-mono-tech text-zinc-500 uppercase flex justify-between">
+              <span>STATUS: VALIDATED</span>
+              <span>ISO 9001 / ROAD-SAFETY</span>
+            </div>
+          </div>
+        </section>
+
+        {/* ======================================================== */}
+        {/* ROW 4: HACKATHON LIVE TESTING CREDENTIALS PANEL          */}
+        {/* ======================================================== */}
+        <section className="tech-panel border border-zinc-800 p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-zinc-800">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="w-2 h-2 bg-emerald-400 rounded-full"></span>
+                <span className="font-tech text-xs tracking-wider uppercase text-zinc-400">
+                  TEST BENCH ACTIVE
                 </span>
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Use your smartphone or vehicle camera stream with live GPS telemetry. Continuously detects road potholes, deduplicates within 30m, and queues captures for officer verification before notifying responsible contractors.
+              <h3 className="font-tech text-lg text-white font-bold uppercase tracking-wider">
+                Authority Test Accounts & Roles
+              </h3>
+              <p className="text-xs font-mono-tech text-zinc-400 mt-1">
+                Pre-seeded municipal credentials for role-based review & verification workflows.
               </p>
             </div>
-            <div className="pt-6">
-              <Link
-                to="/drive-mode"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-400 hover:text-cyan-300 group-hover:translate-x-1 transition-transform"
-              >
-                <span>Launch Live Drive Mode</span>
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
 
-          {/* 3. Authority Command Dashboard */}
-          <div className="glass-panel p-6 sm:p-7 rounded-3xl border border-white/10 hover:border-purple-500/40 transition-all duration-300 group relative flex flex-col justify-between">
-            <div>
-              <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                <Layers className="w-6 h-6" />
-              </div>
-              <h2 className="text-lg font-bold text-white mb-2">
-                Authority Command Center
-              </h2>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Departmental triage dispatch, SLA countdown monitoring with automated escalation workers, and live geospatial mapping with color-coded severity heatmaps.
-              </p>
-            </div>
-            <div className="pt-6">
-              <Link
-                to="/dashboard"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-purple-400 hover:text-purple-300 group-hover:translate-x-1 transition-transform"
-              >
-                <span>Open Dashboard</span>
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* Live System Metrics Bar */}
-        <section className="w-full mt-16 glass-capsule rounded-3xl p-6 sm:p-8 border border-white/10 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          <div>
-            <div className="text-3xl sm:text-4xl font-extrabold text-white font-mono">
-              99.2%
-            </div>
-            <div className="text-xs text-slate-400 mt-1">YOLOv8 Class Precision</div>
-          </div>
-          <div>
-            <div className="text-3xl sm:text-4xl font-extrabold text-indigo-400 font-mono">
-              &lt; 30m
-            </div>
-            <div className="text-xs text-slate-400 mt-1">GPS Road DLP Match Radius</div>
-          </div>
-          <div>
-            <div className="text-3xl sm:text-4xl font-extrabold text-cyan-400 font-mono">
-              24h
-            </div>
-            <div className="text-xs text-slate-400 mt-1">Contractor SLA Turnaround</div>
-          </div>
-          <div>
-            <div className="text-3xl sm:text-4xl font-extrabold text-emerald-400 font-mono">
-              100%
-            </div>
-            <div className="text-xs text-slate-400 mt-1">Automated Audit Trail</div>
-          </div>
-        </section>
-
-        {/* One-Click Demo Accounts Launcher */}
-        <section className="w-full mt-16 glass-panel rounded-3xl p-6 sm:p-8 border border-white/10 text-left">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
-            <div>
-              <h2 className="text-xl font-bold text-white">
-                Interactive Hackathon Demo Credentials
-              </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Instant test accounts pre-configured with Roads Department Officer & Administrator roles.
-              </p>
-            </div>
             <Link
               to="/login"
-              className="px-5 py-2.5 rounded-full bg-white text-slate-950 hover:bg-slate-200 text-xs font-bold shadow-lg transition flex items-center gap-1.5"
+              className="px-5 py-2.5 bg-zinc-100 hover:bg-white text-zinc-950 font-mono-tech text-xs uppercase font-bold transition flex items-center gap-1.5"
             >
-              <span>Go to Login Page</span>
+              <span>ACCESS LOGIN</span>
               <ArrowUpRight className="w-4 h-4" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-            <div className="bg-slate-900/80 p-4 rounded-2xl border border-white/10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+            {/* Officer */}
+            <div className="bg-zinc-900/60 p-4 border border-zinc-800">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold text-white">Department Officer</span>
-                <span className="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full">Roads Dept</span>
+                <span className="text-xs font-mono-tech font-bold text-white uppercase">Roads Officer</span>
+                <span className="text-[10px] font-mono-tech bg-zinc-800 text-zinc-300 px-2 py-0.5">ROADS DEPT</span>
               </div>
-              <div className="text-xs font-mono text-slate-400 space-y-0.5">
-                <div>Email: <span className="text-slate-200">officer@demo.com</span></div>
-                <div>Pass: <span className="text-slate-200">Demo@1234</span></div>
+              <div className="text-xs font-mono-tech text-zinc-400 space-y-1">
+                <div>EMAIL: <span className="text-zinc-200">officer@demo.com</span></div>
+                <div>PASS: <span className="text-zinc-200">Demo@1234</span></div>
               </div>
             </div>
 
-            <div className="bg-slate-900/80 p-4 rounded-2xl border border-white/10">
+            {/* Admin */}
+            <div className="bg-zinc-900/60 p-4 border border-zinc-800">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold text-white">City Administrator</span>
-                <span className="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full">All Depts</span>
+                <span className="text-xs font-mono-tech font-bold text-white uppercase">City Administrator</span>
+                <span className="text-[10px] font-mono-tech bg-zinc-800 text-zinc-300 px-2 py-0.5">ALL DEPTS</span>
               </div>
-              <div className="text-xs font-mono text-slate-400 space-y-0.5">
-                <div>Email: <span className="text-slate-200">admin@demo.com</span></div>
-                <div>Pass: <span className="text-slate-200">Demo@1234</span></div>
+              <div className="text-xs font-mono-tech text-zinc-400 space-y-1">
+                <div>EMAIL: <span className="text-zinc-200">admin@demo.com</span></div>
+                <div>PASS: <span className="text-zinc-200">Demo@1234</span></div>
+              </div>
+            </div>
+
+            {/* Citizen */}
+            <div className="bg-zinc-900/60 p-4 border border-zinc-800">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-mono-tech font-bold text-white uppercase">Public Citizen</span>
+                <span className="text-[10px] font-mono-tech bg-zinc-800 text-zinc-300 px-2 py-0.5">CITIZEN</span>
+              </div>
+              <div className="text-xs font-mono-tech text-zinc-400 space-y-1">
+                <div>EMAIL: <span className="text-zinc-200">citizen@demo.com</span></div>
+                <div>PASS: <span className="text-zinc-200">Demo@1234</span></div>
               </div>
             </div>
           </div>
         </section>
+
       </main>
 
-      {/* Sleek Dark Minimalist Footer */}
-      <footer className="border-t border-white/10 py-8 px-4 text-center text-xs text-slate-500">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 font-serif text-sm text-slate-300 italic">
-            CivicFix — AI Civic Issue & Road Infrastructure System
+      {/* Brutalist Footer */}
+      <footer className="border-t border-zinc-800 py-8 px-4 text-center text-xs font-mono-tech text-zinc-500 bg-[#050507]">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <span className="font-tech text-zinc-300 text-xs tracking-wider">CIVICFIX.SYS</span>
+            <span className="text-zinc-700">|</span>
+            <span>CIVIC INFRASTRUCTURE INTELLIGENCE</span>
           </div>
-          <div className="text-[11px] text-slate-500">
-            Conforms to RULES.md Single Source of Truth • Hackathon v1.0
+          <div className="text-[11px] text-zinc-600">
+            COMPLIANT WITH RULES.MD &bull; HACKATHON ARCHITECTURE SPECIFICATION
           </div>
         </div>
       </footer>

@@ -119,10 +119,10 @@ export const Login: React.FC = () => {
 
         {/* Brand Header */}
         <div className="text-center mb-6">
-          <h1 className="font-serif text-3xl sm:text-4xl font-bold text-white tracking-tight italic">
-            CivicFix
+          <h1 className="font-tech text-2xl sm:text-3xl font-bold text-white tracking-widest uppercase">
+            CIVICFIX<span className="text-zinc-500">.SYS</span>
           </h1>
-          <p className="text-xs text-slate-400 mt-1 uppercase tracking-widest font-mono">
+          <p className="text-xs text-zinc-400 mt-1 uppercase tracking-widest font-mono-tech">
             Authority Command Portal
           </p>
         </div>

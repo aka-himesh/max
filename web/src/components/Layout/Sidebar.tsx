@@ -137,37 +137,38 @@ export const Sidebar: React.FC<{ isMobileOpen?: boolean; onCloseMobile?: () => v
 
       {/* Sidebar container */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-[#090d16] text-slate-100 flex flex-col border-r border-white/[0.08] transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-[#08080a] text-zinc-100 flex flex-col border-r border-zinc-800 transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           isMobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Brand logo */}
-        <div className="h-16 px-6 flex items-center justify-between border-b border-white/[0.08]">
+        <div className="h-16 px-6 flex items-center justify-between border-b border-zinc-800">
           <Link to="/" className="flex items-center gap-2 group">
-            <span className="font-serif text-xl font-bold tracking-tight text-white group-hover:text-indigo-300 transition italic">
-              CivicFix
+            <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+            <span className="font-tech text-base font-bold tracking-wider text-white group-hover:text-zinc-300 transition">
+              CIVICFIX<span className="text-zinc-500">.SYS</span>
             </span>
-            <span className="text-[10px] font-mono text-indigo-400 font-semibold px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20">
+            <span className="text-[9px] font-mono-tech text-zinc-300 px-1.5 py-0.5 bg-zinc-900 border border-zinc-700">
               {role.toUpperCase()}
             </span>
           </Link>
-          <Link to="/" title="Home Page" className="text-slate-400 hover:text-white p-1 rounded-md transition">
+          <Link to="/" title="Home Page" className="text-zinc-500 hover:text-white p-1 transition">
             <Home className="w-4 h-4" />
           </Link>
         </div>
 
         {/* User Scope card */}
         <div className="px-4 py-4">
-          <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-3">
+          <div className="bg-zinc-900/60 border border-zinc-800 p-3">
             <div className="flex items-center gap-2 mb-1">
               {role === 'admin' ? (
-                <ShieldCheck className="w-4 h-4 text-indigo-400 shrink-0" />
+                <ShieldCheck className="w-4 h-4 text-zinc-300 shrink-0" />
               ) : role === 'citizen' ? (
-                <UserCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                <UserCheck className="w-4 h-4 text-zinc-300 shrink-0" />
               ) : (
-                <Building2 className="w-4 h-4 text-cyan-400 shrink-0" />
+                <Building2 className="w-4 h-4 text-zinc-300 shrink-0" />
               )}
-              <span className="text-xs font-semibold text-white truncate">
+              <span className="text-xs font-mono-tech font-semibold text-white truncate">
                 {role === 'admin'
                   ? 'City Administrator'
                   : role === 'citizen'
@@ -175,7 +176,7 @@ export const Sidebar: React.FC<{ isMobileOpen?: boolean; onCloseMobile?: () => v
                   : user?.department_name || 'Roads & Infrastructure'}
               </span>
             </div>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[10px] font-mono-tech text-zinc-500">
               {role === 'admin'
                 ? 'City-wide executive jurisdiction'
                 : role === 'citizen'
@@ -193,10 +194,10 @@ export const Sidebar: React.FC<{ isMobileOpen?: boolean; onCloseMobile?: () => v
               to={item.to}
               onClick={onCloseMobile}
               className={({ isActive }) =>
-                `flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
+                `flex items-center justify-between px-3.5 py-2 text-xs font-mono-tech tracking-wider uppercase transition-all border ${
                   isActive
-                    ? 'bg-white text-slate-950 font-bold shadow-md'
-                    : 'text-slate-300 hover:bg-white/[0.06] hover:text-white'
+                    ? 'bg-zinc-100 text-zinc-950 font-bold border-white'
+                    : 'text-zinc-400 border-transparent hover:border-zinc-800 hover:bg-zinc-900/80 hover:text-zinc-100'
                 }`
               }
             >
@@ -205,7 +206,7 @@ export const Sidebar: React.FC<{ isMobileOpen?: boolean; onCloseMobile?: () => v
                 <span>{item.label}</span>
               </div>
               {item.badge && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono">
+                <span className="text-[9px] px-1.5 py-0.2 bg-zinc-800 text-zinc-300 border border-zinc-700 font-mono-tech">
                   {item.badge}
                 </span>
               )}
@@ -214,14 +215,14 @@ export const Sidebar: React.FC<{ isMobileOpen?: boolean; onCloseMobile?: () => v
         </nav>
 
         {/* User profile footer */}
-        <div className="p-4 border-t border-white/[0.08] flex items-center justify-between">
+        <div className="p-4 border-t border-zinc-800 flex items-center justify-between bg-zinc-950">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-8 h-8 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 flex items-center justify-center font-bold text-xs shrink-0">
+            <div className="w-8 h-8 bg-zinc-800 text-zinc-200 border border-zinc-700 flex items-center justify-center font-bold text-xs shrink-0 font-mono-tech">
               {user?.name?.charAt(0) || 'U'}
             </div>
             <div className="min-w-0">
-              <div className="text-xs font-semibold text-white truncate">{user?.name}</div>
-              <div className="text-[10px] text-slate-400 truncate capitalize font-mono">{user?.role}</div>
+              <div className="text-xs font-semibold text-white truncate font-mono-tech">{user?.name}</div>
+              <div className="text-[10px] text-zinc-500 truncate capitalize font-mono-tech">{user?.role}</div>
             </div>
           </div>
         </div>
