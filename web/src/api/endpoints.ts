@@ -29,6 +29,18 @@ export const api = {
     return res.data.data;
   },
 
+  register: async (data: {
+    name: string;
+    email: string;
+    password: string;
+    phone?: string;
+    role?: string;
+    department_id?: string | null;
+  }): Promise<AuthResponse> => {
+    const res = await apiClient.post<{ data: AuthResponse }>('/auth/register', data);
+    return res.data.data;
+  },
+
   logout: async (): Promise<void> => {
     await apiClient.post('/auth/logout');
   },

@@ -12,7 +12,7 @@ export const CategoryChip: React.FC<CategoryChipProps> = ({ category, className 
 
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200 ${className}`}
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-white/[0.05] text-slate-300 border border-white/10 ${className}`}
     >
       {label}
     </span>

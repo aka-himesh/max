@@ -10,6 +10,7 @@ export type ReportSource = 'citizen' | 'vehicle_ai';
 
 export type ReportStatus =
   | 'submitted'
+  | 'pending_verification'
   | 'verified'
   | 'assigned'
   | 'in_progress'

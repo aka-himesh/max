@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import type { User, Role } from '../api/types';
+import type { User } from '../api/types';
 import { api } from '../api/endpoints';
 import { tokenStorage } from './tokenStorage';
 
@@ -9,6 +9,14 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  register: (data: {
+    name: string;
+    email: string;
+    password: string;
+    phone?: string;
+    role?: string;
+    department_id?: string | null;
+  }) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
 }
@@ -21,24 +29,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const checkAuth = useCallback(async () => {
-    const existingToken = tokenStorage.getToken();
-    if (!existingToken) {
-      setUser(null);
-      setToken(null);
-      setIsLoading(false);
-      return;
-    }
-
     try {
+      // Calls /api/auth/me with HTTP-only cookie
       const me = await api.getMe();
-      if (me.role !== 'officer' && me.role !== 'admin') {
-        tokenStorage.clearToken();
-        setUser(null);
-        setToken(null);
-        throw new Error('Access denied: Citizens and contractors cannot access the Authority Dashboard.');
-      }
       setUser(me);
       tokenStorage.setUser(me);
+      setToken('cookie_session');
     } catch {
       tokenStorage.clearToken();
       setUser(null);
@@ -55,17 +51,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
+      // Backend automatically sets secure HTTP-only auth_token cookie
       const response = await api.login({ email, password });
-      const role: Role = response.user.role;
 
-      if (role !== 'officer' && role !== 'admin') {
-        tokenStorage.clearToken();
-        throw new Error('Access denied: Citizens and contractors cannot access the Authority Dashboard.');
+      if (response.access_token) {
+        tokenStorage.setToken(response.access_token);
       }
-
-      tokenStorage.setToken(response.access_token);
       tokenStorage.setUser(response.user);
-      setToken(response.access_token);
+      setToken(response.access_token || 'cookie_session');
+      setUser(response.user);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const register = async (data: {
+    name: string;
+    email: string;
+    password: string;
+    phone?: string;
+    role?: string;
+    department_id?: string | null;
+  }) => {
+    setIsLoading(true);
+    try {
+      const response = await api.register(data);
+      if (response.access_token) {
+        tokenStorage.setToken(response.access_token);
+      }
+      tokenStorage.setUser(response.user);
+      setToken(response.access_token || 'cookie_session');
       setUser(response.user);
     } finally {
       setIsLoading(false);
@@ -76,7 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await api.logout();
     } catch {
-      // Stateless token fallback
+      // Cookie cleared
     } finally {
       tokenStorage.clearToken();
       setUser(null);
@@ -90,9 +105,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         user,
         token,
-        isAuthenticated: !!token && !!user,
+        isAuthenticated: !!user,
         isLoading,
         login,
+        register,
         logout,
         checkAuth,
       }}
