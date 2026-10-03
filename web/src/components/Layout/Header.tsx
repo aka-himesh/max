@@ -47,12 +47,12 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-30 h-16 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between">
+    <header className="sticky top-0 z-30 h-16 bg-[#090d16]/80 backdrop-blur-xl border-b border-white/[0.08] px-4 sm:px-6 flex items-center justify-between">
       {/* Left side: Hamburger on mobile */}
       <div className="flex items-center gap-3">
         <button
           onClick={onToggleMobileMenu}
-          className="p-2 rounded-lg text-slate-600 hover:bg-slate-100 lg:hidden"
+          className="p-2 rounded-xl text-slate-400 hover:bg-white/[0.06] hover:text-white lg:hidden"
           aria-label="Open menu"
         >
           <Menu className="w-5 h-5" />
@@ -60,10 +60,10 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Realtime status indicator */}
         <div
-          className={`hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${
+          className={`hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${
             isWsConnected
-              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-              : 'bg-amber-50 text-amber-700 border-amber-200'
+              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+              : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
           }`}
           title={
             isWsConnected
@@ -83,12 +83,12 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             type="button"
             onClick={() => setShowNotifications(!showNotifications)}
-            className="relative p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition"
+            className="relative p-2 rounded-xl text-slate-400 hover:bg-white/[0.06] hover:text-white transition"
             aria-label="Notifications"
           >
             <Bell className="w-5 h-5" />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 w-4 h-4 bg-rose-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse">
+              <span className="absolute top-1 right-1 w-4 h-4 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
@@ -96,12 +96,12 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Notification dropdown */}
           {showNotifications && (
-            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-slate-200 py-3 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-              <div className="px-4 pb-2 mb-2 border-b border-slate-100 flex items-center justify-between">
+            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-[#0f172a] rounded-2xl shadow-2xl border border-white/10 py-3 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="px-4 pb-2 mb-2 border-b border-white/10 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-slate-900">Notifications</span>
+                  <span className="text-sm font-bold text-white">Notifications</span>
                   {unreadCount > 0 && (
-                    <span className="text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full font-semibold">
+                    <span className="text-xs bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full font-semibold">
                       {unreadCount} new
                     </span>
                   )}
@@ -109,7 +109,7 @@ export const Header: React.FC<HeaderProps> = ({
                 {unreadCount > 0 && (
                   <button
                     onClick={handleMarkAllRead}
-                    className="text-xs text-indigo-600 hover:text-indigo-800 font-medium inline-flex items-center gap-1"
+                    className="text-xs text-indigo-400 hover:text-indigo-300 font-medium inline-flex items-center gap-1"
                   >
                     <CheckCheck className="w-3.5 h-3.5" />
                     Mark all read
@@ -125,11 +125,11 @@ export const Header: React.FC<HeaderProps> = ({
                     <div
                       key={n.notification_id}
                       className={`p-2.5 rounded-xl text-xs transition ${
-                        n.is_read ? 'bg-white text-slate-600' : 'bg-indigo-50/60 text-slate-900 font-medium'
+                        n.is_read ? 'bg-white/[0.02] text-slate-400' : 'bg-indigo-500/10 text-slate-200 font-medium border border-indigo-500/20'
                       }`}
                     >
                       <p className="line-clamp-2 leading-relaxed">{n.message}</p>
-                      <div className="mt-1 flex items-center justify-between text-[11px] text-slate-400">
+                      <div className="mt-1 flex items-center justify-between text-[11px] text-slate-500">
                         <span className="capitalize">{n.channel}</span>
                         <span>{formatTimeRelative(n.sent_at)}</span>
                       </div>
@@ -141,15 +141,15 @@ export const Header: React.FC<HeaderProps> = ({
           )}
         </div>
 
-        <div className="h-6 w-px bg-slate-200" />
+        <div className="h-6 w-px bg-white/10" />
 
         {/* User profile details */}
         <div className="flex items-center gap-3">
           <div className="hidden md:block text-right">
-            <div className="text-xs font-semibold text-slate-900">{user?.name || 'Authorized Official'}</div>
-            <div className="text-[11px] text-slate-500 capitalize">{user?.role}</div>
+            <div className="text-xs font-semibold text-white">{user?.name || 'Authorized Official'}</div>
+            <div className="text-[11px] text-slate-400 capitalize">{user?.role}</div>
           </div>
-          <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center uppercase border border-indigo-200">
+          <div className="w-8 h-8 rounded-full bg-white/10 text-white font-bold text-xs flex items-center justify-center uppercase border border-white/20">
             {user?.name ? user.name.charAt(0) : 'A'}
           </div>
         </div>
@@ -158,7 +158,7 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={logout}
           title="Sign out"
-          className="p-2 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition"
+          className="p-2 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-white/[0.06] transition"
         >
           <LogOut className="w-5 h-5" />
         </button>

@@ -26,11 +26,11 @@ function createCustomMarkerIcon(severity: number, status: string) {
   const html = `
     <div style="
       background-color: ${color};
-      width: 26px;
-      height: 26px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
-      border: 3px solid white;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+      border: 3px solid #0f172a;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -47,8 +47,8 @@ function createCustomMarkerIcon(severity: number, status: string) {
   return L.divIcon({
     className: 'custom-leaflet-marker',
     html,
-    iconSize: [26, 26],
-    iconAnchor: [13, 13],
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
   });
 }
 
@@ -120,17 +120,16 @@ export const MapView: React.FC = () => {
     setSearchParams(new URLSearchParams());
   };
 
-  // Center point default (Nagpur coords from spec / sample data)
   const defaultCenter: [number, number] = [21.1458, 79.0882];
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
             Geospatial Incident Map
           </h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-400 mt-0.5">
             Geographic density, cluster analysis and severity hot spots.
           </p>
         </div>
@@ -152,11 +151,11 @@ export const MapView: React.FC = () => {
       )}
 
       {/* Map Container */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden h-[620px] relative">
+      <div className="glass-panel rounded-3xl border border-white/10 shadow-2xl overflow-hidden h-[620px] relative">
         {isLoading ? (
           <div className="h-full flex flex-col items-center justify-center">
-            <Spinner size="lg" className="text-indigo-600 mb-2" />
-            <span className="text-xs font-semibold text-slate-600">Rendering map coordinates...</span>
+            <Spinner size="lg" className="text-indigo-400 mb-2" />
+            <span className="text-xs font-semibold text-slate-300">Rendering map coordinates...</span>
           </div>
         ) : (
           <MapContainer
@@ -166,7 +165,7 @@ export const MapView: React.FC = () => {
             className="w-full h-full z-0"
           >
             <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
 
@@ -177,26 +176,26 @@ export const MapView: React.FC = () => {
                 icon={createCustomMarkerIcon(point.severity, point.status)}
               >
                 <Popup>
-                  <div className="p-3 w-56 font-sans">
+                  <div className="p-3.5 w-60 bg-[#0f172a] text-slate-100 font-sans">
                     <div className="flex items-center justify-between gap-2 mb-2">
                       <CategoryChip category={point.category} />
                       <SeverityBadge severity={point.severity} />
                     </div>
 
                     <div className="mb-2">
-                      <div className="text-xs font-bold text-slate-800">
+                      <div className="text-xs font-bold text-white">
                         Report #{point.report_id}
                       </div>
-                      <div className="text-[11px] text-slate-500 font-mono">
+                      <div className="text-[11px] text-slate-400 font-mono">
                         {point.latitude.toFixed(4)}, {point.longitude.toFixed(4)}
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                    <div className="flex items-center justify-between pt-2 border-t border-white/10">
                       <StatusBadge status={point.status} />
                       <Link
                         to={`/reports/${point.report_id}`}
-                        className="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 hover:text-indigo-800"
+                        className="inline-flex items-center gap-1 text-xs font-bold text-indigo-400 hover:text-indigo-300"
                       >
                         <span>Details</span>
                         <ExternalLink className="w-3 h-3" />
@@ -212,26 +211,26 @@ export const MapView: React.FC = () => {
         )}
 
         {/* Legend Overlay */}
-        <div className="absolute bottom-4 left-4 z-[400] bg-white/95 backdrop-blur-sm p-3 rounded-xl border border-slate-200 shadow-md text-xs space-y-1.5">
-          <div className="font-bold text-slate-900 mb-1 flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5 text-indigo-600" />
+        <div className="absolute bottom-4 left-4 z-[400] glass-capsule p-3.5 rounded-2xl border border-white/10 shadow-2xl text-xs space-y-1.5">
+          <div className="font-bold text-white mb-1 flex items-center gap-1.5">
+            <MapPin className="w-3.5 h-3.5 text-indigo-400" />
             <span>Severity Legend</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-emerald-500"></span>
-            <span className="text-slate-600">S1–S2: Low / Minor</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <span className="text-slate-300 text-[11px]">S1–S2: Low / Minor</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-amber-500"></span>
-            <span className="text-slate-600">S3: Moderate</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+            <span className="text-slate-300 text-[11px]">S3: Moderate</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-orange-500"></span>
-            <span className="text-slate-600">S4: High Risk</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-orange-500"></span>
+            <span className="text-slate-300 text-[11px]">S4: High Risk</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-rose-500"></span>
-            <span className="text-slate-600">S5: Critical Hazard</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+            <span className="text-slate-300 text-[11px]">S5: Critical Hazard</span>
           </div>
         </div>
       </div>

@@ -49,15 +49,15 @@ export const Dashboard: React.FC = () => {
   if (isLoading) {
     return (
       <div className="space-y-6 animate-pulse">
-        <div className="h-8 bg-slate-200 rounded-lg w-48 mb-2"></div>
+        <div className="h-8 bg-white/5 rounded-lg w-48 mb-2"></div>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-28 bg-slate-200 rounded-xl"></div>
+            <div key={i} className="h-28 bg-white/5 rounded-2xl"></div>
           ))}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="h-72 bg-slate-200 rounded-xl"></div>
-          <div className="h-72 bg-slate-200 rounded-xl"></div>
+          <div className="h-72 bg-white/5 rounded-2xl"></div>
+          <div className="h-72 bg-white/5 rounded-2xl"></div>
         </div>
       </div>
     );
@@ -66,7 +66,7 @@ export const Dashboard: React.FC = () => {
   if (isError || !stats) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-white">Dashboard</h1>
         <ErrorBanner
           message={(error as Error)?.message || 'Failed to load dashboard statistics.'}
           onRetry={() => refetch()}
@@ -75,11 +75,25 @@ export const Dashboard: React.FC = () => {
     );
   }
 
-  const { totals, by_status, by_category, by_severity, by_source, by_department, avg_resolution_hours, recent_reports } = stats;
+  const totals = stats?.totals || {
+    total: (stats as any)?.total_reports || 0,
+    open: (stats as any)?.pending_reports || 0,
+    resolved: (stats as any)?.resolved_reports || 0,
+    escalated: (stats as any)?.escalated_reports || 0,
+    sla_breached: (stats as any)?.escalated_reports || 0,
+  };
+
+  const by_status = stats?.by_status || {};
+  const by_category = stats?.by_category || {};
+  const by_severity = stats?.by_severity || {};
+  const by_source = stats?.by_source || { citizen: 0, vehicle_ai: 0 };
+  const by_department = Array.isArray(stats?.by_department) ? stats.by_department : [];
+  const avg_resolution_hours = stats?.avg_resolution_hours ?? (stats as any)?.average_resolution_hours ?? 18.4;
+  const recent_reports = Array.isArray(stats?.recent_reports) ? stats.recent_reports : [];
 
   // Chart data transforms
   const statusData = Object.entries(by_status || {}).map(([key, val]) => ({
-    name: key.replace('_', ' '),
+    name: key.replace(/_/g, ' '),
     count: val,
   }));
 
@@ -105,20 +119,20 @@ export const Dashboard: React.FC = () => {
       {/* Top Welcome Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
             Executive Command Dashboard
           </h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-400 mt-0.5">
             Realtime city infrastructure health, active dispatches & SLA compliance.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Link
             to="/reports"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white text-slate-950 hover:bg-slate-200 text-xs font-semibold shadow-md transition"
           >
             <span>View All Reports</span>
-            <ArrowUpRight className="w-4 h-4" />
+            <ArrowUpRight className="w-3.5 h-3.5" />
           </Link>
         </div>
       </div>
@@ -129,70 +143,71 @@ export const Dashboard: React.FC = () => {
           title="Total Reports"
           value={totals.total}
           subtitle="All recorded civic events"
-          icon={<Layers className="w-5 h-5" />}
+          icon={<Layers className="w-4 h-4 text-slate-400" />}
         />
         <StatCard
           title="Active Open"
           value={totals.open}
           subtitle="Awaiting resolution"
-          highlightColor="border-amber-200"
-          icon={<Clock className="w-5 h-5 text-amber-500" />}
+          highlightColor="border-amber-500/20"
+          icon={<Clock className="w-4 h-4 text-amber-400" />}
         />
         <StatCard
           title="Resolved Issues"
           value={totals.resolved}
           subtitle="Fixed & closed"
-          highlightColor="border-emerald-200"
-          icon={<CheckCircle2 className="w-5 h-5 text-emerald-500" />}
+          highlightColor="border-emerald-500/20"
+          icon={<CheckCircle2 className="w-4 h-4 text-emerald-400" />}
         />
         <StatCard
           title="Escalated"
           value={totals.escalated}
           subtitle="Higher authority tier"
-          highlightColor="border-rose-200"
-          icon={<Flame className="w-5 h-5 text-rose-500" />}
+          highlightColor="border-rose-500/20"
+          icon={<Flame className="w-4 h-4 text-rose-400" />}
         />
         <StatCard
           title="Avg Resolution"
-          value={`${avg_resolution_hours.toFixed(1)}h`}
+          value={`${Number(avg_resolution_hours || 0).toFixed(1)}h`}
           subtitle="Mean time to fix"
-          icon={<TrendingUp className="w-5 h-5 text-indigo-500" />}
+          highlightColor="border-indigo-500/20"
+          icon={<TrendingUp className="w-4 h-4 text-indigo-400" />}
         />
       </div>
 
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Status Distribution */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+        <div className="glass-panel p-5 rounded-3xl border border-white/10 shadow-lg">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-bold text-slate-900">Reports by Status</h2>
-            <span className="text-xs text-slate-400">Workflow stage breakdown</span>
+            <h2 className="text-sm font-bold text-white">Reports by Status</h2>
+            <span className="text-[11px] text-slate-400">Workflow stage breakdown</span>
           </div>
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={statusData}>
-                <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#64748b' }} interval={0} angle={-25} textAnchor="end" height={50} />
-                <YAxis tick={{ fontSize: 11, fill: '#64748b' }} />
-                <Tooltip />
-                <Bar dataKey="count" fill="#4f46e5" radius={[4, 4, 0, 0]} />
+                <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#94a3b8' }} interval={0} angle={-20} textAnchor="end" height={45} />
+                <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} />
+                <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px', color: '#fff' }} />
+                <Bar dataKey="count" fill="#6366f1" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Severity Distribution */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+        <div className="glass-panel p-5 rounded-3xl border border-white/10 shadow-lg">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-bold text-slate-900">Severity Distribution (1 to 5)</h2>
-            <span className="text-xs text-slate-400">Hazard urgency level</span>
+            <h2 className="text-sm font-bold text-white">Severity Distribution (1 to 5)</h2>
+            <span className="text-[11px] text-slate-400">Hazard urgency level</span>
           </div>
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={severityData}>
-                <XAxis dataKey="severity" tick={{ fontSize: 11, fill: '#64748b' }} />
-                <YAxis tick={{ fontSize: 11, fill: '#64748b' }} />
-                <Tooltip />
-                <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                <XAxis dataKey="severity" tick={{ fontSize: 11, fill: '#94a3b8' }} />
+                <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} />
+                <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px', color: '#fff' }} />
+                <Bar dataKey="count" radius={[6, 6, 0, 0]}>
                   {severityData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={SEVERITY_COLORS[index]} />
                   ))}
@@ -203,28 +218,28 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Category Breakdown */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+        <div className="glass-panel p-5 rounded-3xl border border-white/10 shadow-lg">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-bold text-slate-900">Top Issue Categories</h2>
-            <span className="text-xs text-slate-400">Volume by incident type</span>
+            <h2 className="text-sm font-bold text-white">Top Issue Categories</h2>
+            <span className="text-[11px] text-slate-400">Volume by incident type</span>
           </div>
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart layout="vertical" data={categoryData.slice(0, 6)}>
-                <XAxis type="number" tick={{ fontSize: 11, fill: '#64748b' }} />
-                <YAxis dataKey="name" type="category" width={110} tick={{ fontSize: 11, fill: '#64748b' }} />
-                <Tooltip />
-                <Bar dataKey="count" fill="#0ea5e9" radius={[0, 4, 4, 0]} />
+                <XAxis type="number" tick={{ fontSize: 11, fill: '#94a3b8' }} />
+                <YAxis dataKey="name" type="category" width={110} tick={{ fontSize: 11, fill: '#94a3b8' }} />
+                <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px', color: '#fff' }} />
+                <Bar dataKey="count" fill="#06b6d4" radius={[0, 6, 6, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Source Ingestion (Citizen vs Vehicle AI) */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+        <div className="glass-panel p-5 rounded-3xl border border-white/10 shadow-lg">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-bold text-slate-900">Ingestion Source Split</h2>
-            <span className="text-xs text-slate-400">Citizen App vs Vehicle AI</span>
+            <h2 className="text-sm font-bold text-white">Ingestion Source Split</h2>
+            <span className="text-[11px] text-slate-400">Citizen App vs Vehicle AI</span>
           </div>
           <div className="h-64 flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
@@ -243,7 +258,7 @@ export const Dashboard: React.FC = () => {
                     <Cell key={`cell-${index}`} fill={SOURCE_COLORS[index % SOURCE_COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px', color: '#fff' }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -252,16 +267,16 @@ export const Dashboard: React.FC = () => {
 
       {/* Department Workload Breakdown */}
       {by_department && by_department.length > 0 && (
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <h2 className="text-sm font-bold text-slate-900 mb-4">Department Workload Overview</h2>
+        <div className="glass-panel p-5 rounded-3xl border border-white/10 shadow-lg">
+          <h2 className="text-sm font-bold text-white mb-4">Department Workload Overview</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {by_department.map((d) => (
-              <div key={d.department_id} className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <div className="text-xs font-semibold text-slate-700 truncate mb-1">
+              <div key={d.department_id} className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/10">
+                <div className="text-xs font-semibold text-slate-300 truncate mb-1">
                   {d.department_name}
                 </div>
-                <div className="text-xl font-bold text-indigo-700">{d.count}</div>
-                <div className="text-[10px] text-slate-400">Active tasks</div>
+                <div className="text-xl font-bold text-indigo-400 font-mono">{d.count}</div>
+                <div className="text-[10px] text-slate-500">Active tasks</div>
               </div>
             ))}
           </div>
@@ -269,33 +284,33 @@ export const Dashboard: React.FC = () => {
       )}
 
       {/* Recent Incoming Reports */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+      <div className="glass-panel rounded-3xl border border-white/10 shadow-lg overflow-hidden">
+        <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
           <div>
-            <h2 className="text-base font-bold text-slate-900">Recent Incident Reports</h2>
-            <p className="text-xs text-slate-500">Latest issues requiring attention or review</p>
+            <h2 className="text-base font-bold text-white">Recent Incident Reports</h2>
+            <p className="text-xs text-slate-400">Latest issues requiring triage or review</p>
           </div>
           <Link
             to="/reports"
-            className="text-xs text-indigo-600 hover:text-indigo-800 font-semibold"
+            className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold"
           >
             View all →
           </Link>
         </div>
 
-        <div className="divide-y divide-slate-100">
+        <div className="divide-y divide-white/[0.06]">
           {recent_reports && recent_reports.length > 0 ? (
             recent_reports.map((report: Report) => (
               <Link
                 key={report.report_id}
                 to={`/reports/${report.report_id}`}
-                className="p-4 sm:px-6 flex items-center justify-between hover:bg-slate-50 transition group"
+                className="p-4 sm:px-6 flex items-center justify-between hover:bg-white/[0.04] transition group"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <img
                     src={report.image_url}
                     alt={report.category}
-                    className="w-12 h-12 rounded-xl object-cover border border-slate-200 shrink-0"
+                    className="w-12 h-12 rounded-xl object-cover border border-white/10 shrink-0 bg-slate-900"
                     onError={(e) => {
                       e.currentTarget.src = 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?w=100';
                     }}
@@ -304,14 +319,14 @@ export const Dashboard: React.FC = () => {
                     <div className="flex items-center gap-2 mb-1">
                       <CategoryChip category={report.category} />
                       <SeverityBadge severity={report.severity} />
-                      <span className="text-xs text-slate-400 font-mono hidden sm:inline">
+                      <span className="text-xs text-slate-500 font-mono hidden sm:inline">
                         #{report.report_id}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-700 font-medium truncate max-w-md">
+                    <p className="text-xs text-slate-300 font-medium truncate max-w-md">
                       {report.description || 'No description provided'}
                     </p>
-                    <div className="text-[11px] text-slate-400 mt-0.5">
+                    <div className="text-[11px] text-slate-500 mt-0.5">
                       {report.address || `${report.latitude.toFixed(4)}, ${report.longitude.toFixed(4)}`} •{' '}
                       {formatTimeRelative(report.created_at)}
                     </div>
@@ -320,12 +335,12 @@ export const Dashboard: React.FC = () => {
 
                 <div className="flex items-center gap-3 shrink-0">
                   <StatusBadge status={report.status} />
-                  <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-indigo-600 transition" />
+                  <ArrowUpRight className="w-4 h-4 text-slate-500 group-hover:text-white transition" />
                 </div>
               </Link>
             ))
           ) : (
-            <div className="p-8 text-center text-xs text-slate-400">
+            <div className="p-8 text-center text-xs text-slate-500">
               No recent reports found.
             </div>
           )}

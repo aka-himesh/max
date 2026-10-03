@@ -16,7 +16,8 @@ export const CATEGORY_LABELS: Record<Category, string> = {
 
 export const STATUS_LABELS: Record<ReportStatus, string> = {
   submitted: 'Submitted',
-  verified: 'Verified',
+  pending_verification: 'Pending Officer Verification',
+  verified: 'Verified & Dispatched',
   assigned: 'Assigned',
   in_progress: 'In Progress',
   resolved: 'Resolved',
@@ -26,7 +27,7 @@ export const STATUS_LABELS: Record<ReportStatus, string> = {
 
 export const SOURCE_LABELS: Record<ReportSource, string> = {
   citizen: 'Citizen Report',
-  vehicle_ai: 'Vehicle AI Detection',
+  vehicle_ai: 'Drive Mode AI',
 };
 
 export const ROLE_LABELS: Record<Role, string> = {
@@ -37,11 +38,12 @@ export const ROLE_LABELS: Record<Role, string> = {
 };
 
 /**
- * Valid status transitions as enforced by Backend (RULES.md Section 5)
+ * Valid status transitions as enforced by Backend (RULES.md Section 5 + Drive Mode)
  */
 export const ALLOWED_STATUS_TRANSITIONS: Record<ReportStatus, ReportStatus[]> = {
-  submitted: ['verified', 'rejected'],
-  verified: ['assigned', 'rejected'],
+  submitted: ['verified', 'rejected', 'pending_verification'],
+  pending_verification: ['verified', 'rejected', 'in_progress'],
+  verified: ['assigned', 'rejected', 'in_progress'],
   assigned: ['in_progress', 'rejected'],
   in_progress: ['resolved', 'rejected'],
   escalated: ['in_progress', 'resolved'],

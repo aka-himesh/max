@@ -27,6 +27,5 @@ Thumbs.db
 *.onnx
 *.bin
 *.tar.gz
-*.zip
-dataset/
-data/
+# Cloned Reference Repos
+pothole-reporter-source/
