@@ -255,6 +255,93 @@ if (isMockMode) {
       return config;
     }
 
+    // Mock POST /reports (Citizen create report)
+    if (url.endsWith('/reports') && method === 'post') {
+      const newReportId = 'r_' + Math.floor(Math.random() * 9000 + 1000);
+      const isFormData = typeof FormData !== 'undefined' && config.data instanceof FormData;
+      let category = 'pothole';
+      let description = 'User submitted report via portal';
+      let lat = 21.1458;
+      let lng = 79.0882;
+      let address = 'Manually Pinpointed Location, Ward 12';
+
+      if (isFormData) {
+        category = (config.data.get('category') as string) || category;
+        description = (config.data.get('description') as string) || description;
+        lat = parseFloat(config.data.get('latitude') as string) || lat;
+        lng = parseFloat(config.data.get('longitude') as string) || lng;
+        address = (config.data.get('address') as string) || address;
+      }
+
+      const createdReport = {
+        ...reportDetailMock.data,
+        report_id: newReportId,
+        category,
+        description,
+        latitude: lat,
+        longitude: lng,
+        address,
+        source: 'citizen',
+        status: 'submitted',
+        severity: category === 'electric_hazard' ? 5 : category === 'pothole' ? 3 : 2,
+        priority_score: 70.0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      config.adapter = async () => ({
+        data: { data: createdReport },
+        status: 201,
+        statusText: 'Created',
+        headers: {},
+        config,
+      });
+      return config;
+    }
+
+    // Mock POST /ml/reports (Dashcam Ingestion & Contractor DLP lookup)
+    if (url.includes('/ml/reports') && method === 'post') {
+      const newReportId = 'r_dash_' + Math.floor(Math.random() * 9000 + 1000);
+      
+      const mockResult = {
+        report_id: newReportId,
+        is_duplicate: false,
+        duplicate_of: null,
+        status: 'verified' as const,
+        road: {
+          road_id: 'rd_401',
+          road_name: 'Inner Ring Road - Sector 4',
+          road_segment: 'Segment 4A (km 12.4 - 14.1)',
+          dlp_start_date: '2024-06-01',
+          dlp_end_date: '2028-05-31',
+          dlp_active: true,
+        },
+        contractor: {
+          contractor_id: 'c_901',
+          contractor_name: 'Rajesh Sharma',
+          company: 'Apex Infrastructure & Highway Builders Ltd.',
+          email: 'contact@apexinfra.com',
+          phone: '+91 98230 45678',
+        },
+        email_dispatched: {
+          recipient: 'contact@apexinfra.com',
+          cc: 'roads.engineer@city.gov',
+          subject: '[URGENT - DLP REPAIR NOTICE] Pothole Hazard Detected on Ring Road Segment 4A',
+          body: 'Automated notification: AI Dashcam Unit bus-12-cam-1 identified a high severity pothole on Ring Road Segment 4A (Lat: 21.1458, Lng: 79.0882). As this road is under active Defect Liability Period (DLP expiring 2028-05-31), Apex Infrastructure is requested to deploy maintenance crew within 24h as per SLA terms.',
+          dlp_active: true,
+        },
+      };
+
+      config.adapter = async () => ({
+        data: { data: mockResult },
+        status: 201,
+        statusText: 'Created',
+        headers: {},
+        config,
+      });
+      return config;
+    }
+
     // Mock /reports/{id}
     if (url.match(/\/reports\/[^/]+$/) && method === 'get') {
       config.adapter = async () => ({

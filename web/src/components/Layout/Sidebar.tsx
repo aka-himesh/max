@@ -6,6 +6,8 @@ import {
   MapPin,
   ShieldAlert,
   Building2,
+  PlusCircle,
+  Video,
 } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
 
@@ -30,6 +32,16 @@ export const Sidebar: React.FC<{ isMobileOpen?: boolean; onCloseMobile?: () => v
       to: '/map',
       label: 'Geospatial Map',
       icon: <MapPin className="w-5 h-5" />,
+    },
+    {
+      to: '/report-issue',
+      label: 'Report Issue (User)',
+      icon: <PlusCircle className="w-5 h-5" />,
+    },
+    {
+      to: '/dashcam-simulator',
+      label: 'AI Dashcam & DLP Mailer',
+      icon: <Video className="w-5 h-5" />,
     },
   ];
 

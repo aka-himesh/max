@@ -39,6 +39,15 @@ export const api = {
   },
 
   // 7.2 Reports
+  createReport: async (formData: FormData): Promise<ReportDetail> => {
+    const res = await apiClient.post<{ data: ReportDetail }>('/reports', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return res.data.data;
+  },
+
   getReports: async (params?: ReportFilterParams): Promise<Paginated<Report>> => {
     const res = await apiClient.get<{ data: Report[]; meta: Paginated<Report>['meta'] }>('/reports', {
       params,
@@ -82,6 +91,46 @@ export const api = {
 
   getReportEscalations: async (reportId: string): Promise<EscalationItem[]> => {
     const res = await apiClient.get<{ data: EscalationItem[] }>(`/reports/${reportId}/escalations`);
+    return res.data.data;
+  },
+
+  // 7.3 ML Ingestion (Dashcam)
+  submitMlReport: async (formData: FormData): Promise<{
+    report_id: string;
+    is_duplicate: boolean;
+    duplicate_of: string | null;
+    status: ReportStatus;
+    road?: RoadInfo | null;
+    contractor?: Contractor | null;
+    email_dispatched?: {
+      recipient: string;
+      cc?: string;
+      subject: string;
+      body: string;
+      dlp_active: boolean;
+    };
+  }> => {
+    const res = await apiClient.post<{
+      data: {
+        report_id: string;
+        is_duplicate: boolean;
+        duplicate_of: string | null;
+        status: ReportStatus;
+        road?: RoadInfo | null;
+        contractor?: Contractor | null;
+        email_dispatched?: {
+          recipient: string;
+          cc?: string;
+          subject: string;
+          body: string;
+          dlp_active: boolean;
+        };
+      };
+    }>('/ml/reports', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return res.data.data;
   },
 

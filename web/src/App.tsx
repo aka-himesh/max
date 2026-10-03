@@ -10,6 +10,8 @@ import { Dashboard } from './pages/Dashboard';
 import { Reports } from './pages/Reports';
 import { ReportDetail } from './pages/ReportDetail';
 import { MapView } from './pages/MapView';
+import { ReportIssue } from './pages/ReportIssue';
+import { DashcamSimulator } from './pages/DashcamSimulator';
 import { NotFound } from './pages/NotFound';
 
 const queryClient = new QueryClient({
@@ -45,6 +47,8 @@ export const App: React.FC = () => {
               <Route path="reports" element={<Reports />} />
               <Route path="reports/:id" element={<ReportDetail />} />
               <Route path="map" element={<MapView />} />
+              <Route path="report-issue" element={<ReportIssue />} />
+              <Route path="dashcam-simulator" element={<DashcamSimulator />} />
             </Route>
 
             {/* 404 Fallback */}
