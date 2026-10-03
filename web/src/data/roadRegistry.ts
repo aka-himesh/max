@@ -157,21 +157,88 @@ export const ROAD_REGISTRY: RoadRegistryRecord[] = [
 ];
 
 /**
- * Find the closest road tender record within threshold distance (~500m)
+ * Haversine formula to compute exact great-circle distance between two GPS coordinates in meters
  */
-export function findRoadRegistryByGps(lat: number, lng: number): RoadRegistryRecord {
+export function calculateHaversineMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371000; // Earth radius in meters
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return Math.round(R * c);
+}
+
+/**
+ * Find the closest road tender record with exact geodesic distance in meters
+ */
+export function findRoadRegistryByGps(lat: number, lng: number): RoadRegistryRecord & { distanceMeters: number } {
   let closest = ROAD_REGISTRY[0];
-  let minDistance = Number.MAX_VALUE;
+  let minDistanceMeters = Number.MAX_VALUE;
 
   for (const record of ROAD_REGISTRY) {
-    const dist = Math.hypot(record.latitude - lat, record.longitude - lng);
-    if (dist < minDistance) {
-      minDistance = dist;
+    const distMeters = calculateHaversineMeters(lat, lng, record.latitude, record.longitude);
+    if (distMeters < minDistanceMeters) {
+      minDistanceMeters = distMeters;
       closest = record;
     }
   }
 
-  return closest;
+  return {
+    ...closest,
+    distanceMeters: minDistanceMeters,
+  };
+}
+
+/**
+ * Reverse geocode coordinates to get precise street name, neighborhood and locality
+ */
+export async function reverseGeocodeGps(lat: number, lng: number): Promise<{
+  formattedAddress: string;
+  roadName: string | null;
+  suburb: string | null;
+  city: string | null;
+}> {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
+      {
+        headers: {
+          'Accept-Language': 'en',
+          'User-Agent': 'MAX-Civic-Infrastructure-Platform/1.0',
+        },
+      }
+    );
+    if (res.ok) {
+      const data = await res.json();
+      const addr = data.address || {};
+      const roadName = addr.road || addr.street || addr.neighbourhood || addr.suburb || null;
+      const suburb = addr.suburb || addr.neighbourhood || addr.residential || null;
+      const city = addr.city || addr.town || addr.municipality || 'Nagpur';
+      
+      const parts = [roadName, suburb, city].filter(Boolean);
+      return {
+        formattedAddress: parts.length > 0 ? parts.join(', ') : data.display_name?.split(',').slice(0, 3).join(',') || `${lat.toFixed(5)}, ${lng.toFixed(5)}`,
+        roadName,
+        suburb,
+        city,
+      };
+    }
+  } catch {
+    // Fallback to local road registry match
+  }
+
+  const matched = findRoadRegistryByGps(lat, lng);
+  return {
+    formattedAddress: `${matched.road_name}, ${matched.ward} (GPS: ${lat.toFixed(5)}, ${lng.toFixed(5)})`,
+    roadName: matched.road_name,
+    suburb: matched.ward,
+    city: 'Nagpur',
+  };
 }
 
 /**

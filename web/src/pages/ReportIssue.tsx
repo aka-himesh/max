@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Circle, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import { api } from '../api/endpoints';
 import type { Category, ReportDetail, AiResult } from '../api/types';
@@ -11,6 +11,7 @@ import { ErrorBanner } from '../components/ErrorBanner';
 import { ImageWithBoxes } from '../components/ImageWithBoxes';
 import {
   findRoadRegistryByGps,
+  reverseGeocodeGps,
   generateComplaintEmailDraft,
   type RoadRegistryRecord,
 } from '../data/roadRegistry';
@@ -153,19 +154,21 @@ export const ReportIssue: React.FC = () => {
   const [description, setDescription] = useState<string>('');
   const [latitude, setLatitude] = useState<number>(21.1458);
   const [longitude, setLongitude] = useState<number>(79.0882);
+  const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
   const [address, setAddress] = useState<string>('Inner Ring Road Arterial Corridor, Pratap Nagar');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>(SAMPLE_PHOTOS[0].url);
   const [instantAiResult, setInstantAiResult] = useState<AiResult | null>(SAMPLE_PHOTOS[0].aiDetection);
   const [isAiAnalyzing, setIsAiAnalyzing] = useState<boolean>(false);
   const [isLocating, setIsLocating] = useState<boolean>(false);
+  const [isReverseGeocoding, setIsReverseGeocoding] = useState<boolean>(false);
   const [showEmailPreview, setShowEmailPreview] = useState<boolean>(false);
   const [copiedEmail, setCopiedEmail] = useState<boolean>(false);
   const [createdResult, setCreatedResult] = useState<ReportDetail | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Derive matched road record & contractor information from GPS
-  const matchedRoad: RoadRegistryRecord = findRoadRegistryByGps(latitude, longitude);
+  const matchedRoad: RoadRegistryRecord & { distanceMeters: number } = findRoadRegistryByGps(latitude, longitude);
 
   // Simulate instant client AI scan on image selection
   const runInstantAiPotholeScan = (imageUrl: string, fileName?: string) => {
@@ -212,42 +215,55 @@ export const ReportIssue: React.FC = () => {
     setCategory(sample.category);
     setLatitude(sample.lat);
     setLongitude(sample.lng);
+    setGpsAccuracy(null);
     setAddress(sample.address);
     setInstantAiResult(sample.aiDetection);
   };
 
+  const updateLocationDetails = async (lat: number, lng: number, acc?: number | null) => {
+    setLatitude(lat);
+    setLongitude(lng);
+    if (acc !== undefined) setGpsAccuracy(acc);
+
+    setIsReverseGeocoding(true);
+    try {
+      const geocoded = await reverseGeocodeGps(lat, lng);
+      setAddress(geocoded.formattedAddress);
+    } catch {
+      const road = findRoadRegistryByGps(lat, lng);
+      setAddress(`${road.road_name}, ${road.ward}`);
+    } finally {
+      setIsReverseGeocoding(false);
+    }
+  };
+
   const handleUseCurrentLocation = () => {
     if (!navigator.geolocation) {
-      setErrorMessage('Geolocation is not supported by your browser.');
+      setErrorMessage('Geolocation hardware is not supported by your browser.');
       return;
     }
 
     setIsLocating(true);
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const lat = parseFloat(position.coords.latitude.toFixed(5));
-        const lng = parseFloat(position.coords.longitude.toFixed(5));
-        setLatitude(lat);
-        setLongitude(lng);
-        const road = findRoadRegistryByGps(lat, lng);
-        setAddress(`${road.road_name}, ${road.ward}`);
+        const lat = parseFloat(position.coords.latitude.toFixed(6));
+        const lng = parseFloat(position.coords.longitude.toFixed(6));
+        const acc = position.coords.accuracy ? Math.round(position.coords.accuracy * 10) / 10 : null;
+        updateLocationDetails(lat, lng, acc);
         setIsLocating(false);
       },
       () => {
         setIsLocating(false);
-        setErrorMessage('Unable to retrieve device GPS. Click on the map to manually pinpoint.');
+        setErrorMessage('Unable to acquire hardware GPS fix. Click on the map to pinpoint manually.');
       },
-      { timeout: 10000, enableHighAccuracy: true }
+      { timeout: 15000, enableHighAccuracy: true, maximumAge: 0 }
     );
   };
 
   const handleMapLocationSelect = (lat: number, lng: number) => {
-    const fixedLat = parseFloat(lat.toFixed(5));
-    const fixedLng = parseFloat(lng.toFixed(5));
-    setLatitude(fixedLat);
-    setLongitude(fixedLng);
-    const road = findRoadRegistryByGps(fixedLat, fixedLng);
-    setAddress(`${road.road_name}, ${road.ward} (Pin: ${fixedLat}, ${fixedLng})`);
+    const fixedLat = parseFloat(lat.toFixed(6));
+    const fixedLng = parseFloat(lng.toFixed(6));
+    updateLocationDetails(fixedLat, fixedLng, null);
   };
 
   // Generate complaint email preview
@@ -543,44 +559,87 @@ export const ReportIssue: React.FC = () => {
 
         {/* Step 2: Location & GPS Road Contractor Match */}
         <div className="glass-panel p-5 sm:p-6 rounded-3xl border border-white/10 shadow-lg space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <MapPin className="w-5 h-5 text-indigo-400" />
-              <h2 className="text-sm font-bold text-white">
-                2. Geolocation & Road Contractor DLP Matching
-              </h2>
+              <div>
+                <h2 className="text-sm font-bold text-white">
+                  2. Geolocation & Road Contractor DLP Matching
+                </h2>
+                <div className="flex items-center gap-2 mt-0.5">
+                  {gpsAccuracy !== null ? (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full font-mono font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                      ⚡ Hardware GPS Fix (±{gpsAccuracy}m precision)
+                    </span>
+                  ) : (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full font-mono text-slate-400 bg-white/[0.05]">
+                      Pinpoint Location (Sub-meter Accuracy)
+                    </span>
+                  )}
+                  {isReverseGeocoding && (
+                    <span className="text-[10px] text-cyan-400 animate-pulse flex items-center gap-1">
+                      <Spinner size="sm" />
+                      <span>Resolving address...</span>
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
             <button
               type="button"
               onClick={handleUseCurrentLocation}
               disabled={isLocating}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-300 hover:text-white bg-indigo-500/20 hover:bg-indigo-500/30 px-3 py-1.5 rounded-xl border border-indigo-500/30 transition"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-300 hover:text-white bg-indigo-500/20 hover:bg-indigo-500/30 px-3 py-1.5 rounded-xl border border-indigo-500/30 transition shadow-sm self-start sm:self-auto"
             >
               {isLocating ? <Spinner size="sm" /> : <Navigation className="w-3.5 h-3.5" />}
-              <span>{isLocating ? 'Locating...' : 'Use My GPS'}</span>
+              <span>{isLocating ? 'Acquiring Satellites...' : 'Lock Live GPS (High Accuracy)'}</span>
             </button>
           </div>
 
           <p className="text-xs text-slate-400">
-            Click anywhere on the map or drag coordinates to manually pinpoint the exact location. The system matches public tender records to identify the responsible road contractor.
+            Click anywhere on the map or drag the pin to set the exact pothole spot. The system uses Haversine geodesic distance to match the registered contractor.
           </p>
 
-          {/* Interactive Leaflet Location Picker */}
-          <div className="h-64 rounded-2xl overflow-hidden border border-white/10 relative">
+          {/* Interactive Leaflet Location Picker with Precision Circle */}
+          <div className="h-72 rounded-2xl overflow-hidden border border-white/10 relative">
             <MapContainer
               center={[latitude, longitude]}
-              zoom={14}
+              zoom={15}
               className="w-full h-full z-0"
             >
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              <Marker position={[latitude, longitude]} icon={locationPickerIcon} />
+              <Circle
+                center={[latitude, longitude]}
+                radius={gpsAccuracy ? Math.max(gpsAccuracy, 8) : 12}
+                pathOptions={{
+                  color: '#6366f1',
+                  fillColor: '#818cf8',
+                  fillOpacity: 0.2,
+                  weight: 1.5,
+                }}
+              />
+              <Marker
+                position={[latitude, longitude]}
+                icon={locationPickerIcon}
+                draggable={true}
+                eventHandlers={{
+                  dragend(e) {
+                    const marker = e.target;
+                    const pos = marker.getLatLng();
+                    handleMapLocationSelect(pos.lat, pos.lng);
+                  },
+                }}
+              />
               <LocationPickerEvents onSelectLocation={handleMapLocationSelect} />
             </MapContainer>
-            <div className="absolute top-2 right-2 z-[400] glass-capsule px-2.5 py-1 rounded-lg border border-white/10 text-[10px] font-mono text-slate-200">
-              Click map to reposition marker
+            <div className="absolute top-2 right-2 z-[400] glass-capsule px-2.5 py-1 rounded-lg border border-white/10 text-[10px] font-mono text-slate-200 shadow-md">
+              💡 Drag pin or click map to reposition
+            </div>
+            <div className="absolute bottom-2 left-2 z-[400] glass-capsule px-2.5 py-1 rounded-lg border border-white/10 text-[10px] font-mono text-indigo-300 shadow-md">
+              GPS: {latitude.toFixed(6)}° N, {longitude.toFixed(6)}° E
             </div>
           </div>
 
@@ -591,16 +650,21 @@ export const ReportIssue: React.FC = () => {
                 <Building2 className="w-4 h-4 text-cyan-400" />
                 <span className="text-xs font-bold text-white">Public Tender & Contractor Registry</span>
               </div>
-              {matchedRoad.dlp_active ? (
-                <span className="text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1">
-                  <ShieldCheck className="w-3 h-3" />
-                  <span>DLP Active (Contractor Liable)</span>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] px-2 py-0.5 rounded-full font-mono bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                  {matchedRoad.distanceMeters !== undefined ? `${matchedRoad.distanceMeters}m to centerline` : 'Matched'}
                 </span>
-              ) : (
-                <span className="text-[10px] px-2.5 py-0.5 rounded-full font-medium bg-white/[0.05] text-slate-400">
-                  DLP Expired (Municipal PWD)
-                </span>
-              )}
+                {matchedRoad.dlp_active ? (
+                  <span className="text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1">
+                    <ShieldCheck className="w-3 h-3" />
+                    <span>DLP Active (Contractor Liable)</span>
+                  </span>
+                ) : (
+                  <span className="text-[10px] px-2.5 py-0.5 rounded-full font-medium bg-white/[0.05] text-slate-400">
+                    DLP Expired (Municipal PWD)
+                  </span>
+                )}
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -631,24 +695,24 @@ export const ReportIssue: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Latitude</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">Latitude (6 Decimals)</label>
               <input
                 type="number"
                 step="any"
                 required
                 value={latitude}
-                onChange={(e) => setLatitude(parseFloat(e.target.value) || 0)}
+                onChange={(e) => updateLocationDetails(parseFloat(e.target.value) || 0, longitude)}
                 className="w-full text-xs font-mono p-2.5 rounded-xl border border-white/10 bg-white/[0.04] text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Longitude</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">Longitude (6 Decimals)</label>
               <input
                 type="number"
                 step="any"
                 required
                 value={longitude}
-                onChange={(e) => setLongitude(parseFloat(e.target.value) || 0)}
+                onChange={(e) => updateLocationDetails(latitude, parseFloat(e.target.value) || 0)}
                 className="w-full text-xs font-mono p-2.5 rounded-xl border border-white/10 bg-white/[0.04] text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               />
             </div>

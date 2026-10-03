@@ -3,7 +3,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 export interface GeoLocationState {
   latitude: number | null;
   longitude: number | null;
-  accuracy: number | null;
+  accuracy: number | null; // meters
+  accuracyLevel: 'satellite' | 'standard' | 'approximate' | 'unknown';
   speed: number | null; // m/s
   speedKmH: number | null;
   heading: number | null; // degrees
@@ -11,6 +12,7 @@ export interface GeoLocationState {
   timestamp: number | null;
   error: string | null;
   isTracking: boolean;
+  fixCount: number;
 }
 
 export const useGeoLocation = () => {
@@ -18,6 +20,7 @@ export const useGeoLocation = () => {
     latitude: null,
     longitude: null,
     accuracy: null,
+    accuracyLevel: 'unknown',
     speed: null,
     speedKmH: null,
     heading: null,
@@ -25,21 +28,29 @@ export const useGeoLocation = () => {
     timestamp: null,
     error: null,
     isTracking: false,
+    fixCount: 0,
   });
 
   const watchIdRef = useRef<number | null>(null);
+  const bestFixRef = useRef<{ lat: number; lng: number; accuracy: number } | null>(null);
+
+  const getAccuracyLevel = (accuracy: number | null): 'satellite' | 'standard' | 'approximate' | 'unknown' => {
+    if (accuracy === null) return 'unknown';
+    if (accuracy <= 8) return 'satellite'; // High Precision Satellite Fix (<8m)
+    if (accuracy <= 25) return 'standard'; // Standard GPS Fix (8-25m)
+    return 'approximate'; // Cellular / Wi-Fi Triangulation (>25m)
+  };
 
   const startTracking = useCallback(() => {
     if (!navigator.geolocation) {
       setLocation((prev) => ({
         ...prev,
-        error: 'Geolocation is not supported by your browser.',
+        error: 'Geolocation hardware is not supported on this browser.',
         isTracking: false,
       }));
       return;
     }
 
-    // Clear previous watcher if any
     if (watchIdRef.current !== null) {
       navigator.geolocation.clearWatch(watchIdRef.current);
       watchIdRef.current = null;
@@ -47,20 +58,29 @@ export const useGeoLocation = () => {
 
     setLocation((prev) => ({ ...prev, isTracking: true, error: null }));
 
+    // High-accuracy hardware GPS options
     const options: PositionOptions = {
       enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 2000,
+      timeout: 15000,
+      maximumAge: 0, // Force fresh satellite/sensor reading, no cached positions
     };
 
     const handleSuccess = (position: GeolocationPosition) => {
       const { latitude, longitude, accuracy, speed, heading, altitude } = position.coords;
       const speedKmH = speed !== null && speed >= 0 ? Math.round(speed * 3.6 * 10) / 10 : null;
+      const acc = accuracy ? Math.round(accuracy * 10) / 10 : null;
+      const accLevel = getAccuracyLevel(acc);
 
-      setLocation({
+      // Track the best accuracy fix
+      if (!bestFixRef.current || (acc !== null && acc < bestFixRef.current.accuracy)) {
+        bestFixRef.current = { lat: latitude, lng: longitude, accuracy: acc || 999 };
+      }
+
+      setLocation((prev) => ({
         latitude: parseFloat(latitude.toFixed(6)),
         longitude: parseFloat(longitude.toFixed(6)),
-        accuracy: accuracy ? Math.round(accuracy * 10) / 10 : null,
+        accuracy: acc,
+        accuracyLevel: accLevel,
         speed: speed ?? null,
         speedKmH,
         heading: heading ?? null,
@@ -68,20 +88,21 @@ export const useGeoLocation = () => {
         timestamp: position.timestamp,
         error: null,
         isTracking: true,
-      });
+        fixCount: prev.fixCount + 1,
+      }));
     };
 
     const handleError = (error: GeolocationPositionError) => {
-      let message = 'Unable to retrieve location.';
+      let message = 'Unable to acquire satellite GPS fix.';
       switch (error.code) {
         case error.PERMISSION_DENIED:
-          message = 'Location permission was denied. Please allow location access to tag road coordinates.';
+          message = 'Location access permission was denied. Please allow GPS access in browser settings.';
           break;
         case error.POSITION_UNAVAILABLE:
-          message = 'GPS location is currently unavailable. Ensure device location is turned ON.';
+          message = 'Satellite GPS signal unavailable. Please ensure Device Location / High Accuracy is ON.';
           break;
         case error.TIMEOUT:
-          message = 'GPS request timed out. Retrying...';
+          message = 'GPS acquisition timed out. Re-acquiring satellite lock...';
           break;
       }
       setLocation((prev) => ({
@@ -90,10 +111,10 @@ export const useGeoLocation = () => {
       }));
     };
 
-    // First try immediate one-shot position
+    // Immediate one-shot fix
     navigator.geolocation.getCurrentPosition(handleSuccess, handleError, options);
 
-    // Then start continuous watch
+    // Continuous watch for movement updates
     watchIdRef.current = navigator.geolocation.watchPosition(
       handleSuccess,
       handleError,

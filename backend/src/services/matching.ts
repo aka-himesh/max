@@ -12,10 +12,11 @@ export interface RoadMatchResult {
   contractor_company: string | null;
   contractor_email: string | null;
   contractor_phone: string | null;
+  distance_meters?: number;
 }
 
 export async function matchRoadByGps(lat: number, lng: number): Promise<RoadMatchResult> {
-  // Query closest road from Supabase database within ~500m
+  // Query closest road from Supabase database with PostGIS geodesic distance in meters
   const res = await db.query(`
     SELECT 
       r.road_id,
@@ -29,10 +30,13 @@ export async function matchRoadByGps(lat: number, lng: number): Promise<RoadMatc
       c.company as contractor_company,
       c.email as contractor_email,
       c.phone as contractor_phone,
-      |/ ( (r.latitude - $1)^2 + (r.longitude - $2)^2 ) as distance
+      ST_DistanceSphere(
+        ST_SetSRID(ST_MakePoint(r.longitude, r.latitude), 4326),
+        ST_SetSRID(ST_MakePoint($2, $1), 4326)
+      ) as distance_meters
     FROM roads r
     LEFT JOIN contractors c ON r.contractor_id = c.contractor_id
-    ORDER BY distance ASC
+    ORDER BY distance_meters ASC
     LIMIT 1;
   `, [lat, lng]);
 
@@ -65,6 +69,7 @@ export async function matchRoadByGps(lat: number, lng: number): Promise<RoadMatc
     contractor_company: row.contractor_company,
     contractor_email: row.contractor_email,
     contractor_phone: row.contractor_phone,
+    distance_meters: row.distance_meters !== null && row.distance_meters !== undefined ? Math.round(parseFloat(row.distance_meters)) : undefined,
   };
 }
 
